@@ -38,7 +38,9 @@ class SantriForm
                 \Filament\Forms\Components\TextInput::make('nama_orangtua')
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('wa_orangtua')
-                    ->tel()
+                    ->label('WA Orang Tua')
+                    ->placeholder('Contoh: 08123456789 atau +628123456789')
+                    ->rule('regex:/^[\+\(\)\-\s0-9]{7,20}$/')
                     ->required(),
             ]);
     }
