@@ -30,8 +30,10 @@ class SantriForm
                     ->relationship('ustadz', 'nama_ustadz')
                     ->required(),
                 \Filament\Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name', fn($query) => $query->where('role', 'wali_murid'))
-                    ->label('Akun Wali Murid')
+                    ->relationship('user', 'name', fn($query) => $query->where('role', 'wali_santri'))
+                    ->label('Wali Santri')
+                    ->searchable()
+                    ->preload()
                     ->nullable(),
                 \Filament\Forms\Components\TextInput::make('nama_orangtua')
                     ->required(),

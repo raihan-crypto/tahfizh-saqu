@@ -51,8 +51,9 @@ class SantriResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         $query = parent::getEloquentQuery();
-        if (auth()->user()->role === 'wali_murid') {
-            $query->where('user_id', auth()->id());
+        $user = auth()->user();
+        if (in_array($user->role, ['wali_murid', 'wali_santri'])) {
+            $query->where('user_id', $user->id);
         }
         return $query;
     }

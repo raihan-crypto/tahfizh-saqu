@@ -37,7 +37,7 @@ class User extends Authenticatable
         }
 
         if ($panel->getId() === 'app') {
-            return in_array($this->role, ['guru', 'ustadz', 'wali_murid', 'walisantri']);
+            return in_array($this->role, ['guru', 'ustadz', 'wali_murid', 'walisantri', 'wali_santri']);
         }
 
         return true;

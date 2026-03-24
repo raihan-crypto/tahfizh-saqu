@@ -30,6 +30,7 @@ class UserForm
                         'admin' => 'Admin',
                         'guru' => 'Guru',
                         'wali_murid' => 'Wali Murid',
+                        'wali_santri' => 'Wali Santri',
                     ])
                     ->required()
                     ->default('guru'),
