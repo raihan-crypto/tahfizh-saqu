@@ -35,5 +35,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
             'role' => 'wali_santri',
         ]);
+
+        $this->call(DummyDataSeeder::class);
     }
 }

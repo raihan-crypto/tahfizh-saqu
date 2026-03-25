@@ -11,8 +11,13 @@ class Ustadz extends Model
     use SoftDeletes;
     protected $guarded = [];
 
+    public function kelasHalaqahs()
+    {
+        return $this->hasMany(KelasHalaqah::class);
+    }
+
     public function santris()
     {
-        return $this->hasMany(Santri::class);
+        return $this->hasManyThrough(Santri::class, KelasHalaqah::class);
     }
 }

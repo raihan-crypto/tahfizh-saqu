@@ -40,15 +40,14 @@ class BottomSantriTable extends BaseWidget
                         }),
                     Tables\Columns\TextColumn::make('nama_santri')
                         ->label('')
-                        ->formatStateUsing(function ($record) {
-                            $ustadzName = $record->ustadz ? $record->ustadz->nama_ustadz : '-';
-                            return new \Illuminate\Support\HtmlString('
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-weight: bold; font-size: 1rem; color: #374151;">' . e($record->nama_santri) . '</span>
-                                    <span style="font-size: 0.875rem; color: #9ca3af;">Kelas ' . e($record->kelas) . ' &bull; Ust. ' . e($ustadzName) . '</span>
-                                </div>
-                            ');
-                        }),
+                            ->formatStateUsing(function (string $state, $record) {
+                                $ustadzName = ($record->kelasHalaqah && $record->kelasHalaqah->ustadz) ? $record->kelasHalaqah->ustadz->nama_ustadz : '-';
+                                $kelasName = $record->kelasHalaqah ? $record->kelasHalaqah->nama_kelas : '-';
+                                return '<div style="display: flex; flex-direction: column;">
+                                            <span style="font-weight: 500;">' . e($record->nama_santri) . '</span>
+                                            <span style="font-size: 0.875rem; color: #9ca3af;">Kelas ' . e($kelasName) . ' &bull; Ust. ' . e($ustadzName) . '</span>
+                                        </div>';
+                            }),
                     Tables\Columns\TextColumn::make('total_baris')
                         ->label('')
                         ->grow(false)

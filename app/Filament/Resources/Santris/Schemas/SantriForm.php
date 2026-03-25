@@ -22,12 +22,11 @@ class SantriForm
                         'Perempuan' => 'Perempuan',
                     ])
                     ->required(),
-                \Filament\Forms\Components\TextInput::make('kelas')
-                    ->required(),
-                \Filament\Forms\Components\TextInput::make('kelas_halaqah')
-                    ->required(),
-                \Filament\Forms\Components\Select::make('ustadz_id')
-                    ->relationship('ustadz', 'nama_ustadz')
+                \Filament\Forms\Components\Select::make('kelas_halaqah_id')
+                    ->relationship('kelasHalaqah', 'nama_kelas')
+                    ->label('Kelas / Halaqah')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 \Filament\Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name', fn($query) => $query->where('role', 'wali_santri'))

@@ -13,8 +13,10 @@ class SetoranInfolist
             ->components([
                 TextEntry::make('santri_id')
                     ->numeric(),
-                TextEntry::make('ustadz_id')
-                    ->numeric(),
+                TextEntry::make('santri.kelasHalaqah.nama_kelas')
+                    ->label('Kelas'),
+                TextEntry::make('santri.kelasHalaqah.ustadz.nama_ustadz')
+                    ->label('Guru Pengampu'),
                 TextEntry::make('tanggal')
                     ->date(),
                 TextEntry::make('jenis_setoran')

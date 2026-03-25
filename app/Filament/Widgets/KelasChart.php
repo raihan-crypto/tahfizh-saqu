@@ -17,16 +17,17 @@ class KelasChart extends ChartWidget
 
     protected function getData(): array
     {
-        $kelas = Santri::distinct()->pluck('kelas')->filter()->values()->toArray();
+        $kelasHalaqahs = \App\Models\KelasHalaqah::all();
+        $labels = [];
         $dataCapaian = [];
 
-        foreach ($kelas as $k) {
-            $santriDiKelas = Santri::where('kelas', $k)->count();
+        foreach ($kelasHalaqahs as $k) {
+            $santriDiKelas = Santri::where('kelas_halaqah_id', $k->id)->count();
             
             if ($santriDiKelas > 0) {
                 $totalBaris = \DB::table('setorans')
                     ->join('santris', 'santris.id', '=', 'setorans.santri_id')
-                    ->where('santris.kelas', $k)
+                    ->where('santris.kelas_halaqah_id', $k->id)
                     ->sum('setorans.ziyadah_baris');
                 
                 $rataRataBaris = $totalBaris / $santriDiKelas;
@@ -35,6 +36,7 @@ class KelasChart extends ChartWidget
                 $rataRataJuz = 0;
             }
             
+            $labels[] = $k->nama_kelas;
             $dataCapaian[] = $rataRataJuz;
         }
 
@@ -46,7 +48,7 @@ class KelasChart extends ChartWidget
                     'backgroundColor' => '#f59e0b',
                 ],
             ],
-            'labels' => $kelas,
+            'labels' => $labels,
         ];
     }
 

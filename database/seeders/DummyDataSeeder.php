@@ -17,6 +17,7 @@ class DummyDataSeeder extends Seeder
         \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         Setoran::truncate();
         Santri::truncate();
+        \App\Models\KelasHalaqah::truncate();
         Ustadz::truncate();
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
@@ -40,55 +41,98 @@ class DummyDataSeeder extends Seeder
             $ustadzIds[] = $ustadz->id;
         }
 
-        // Buat data 10 Santri
         $kelasOptions = ['1', '2', '3', '4', '5', '6'];
-        $halaqahOptions = ['Abu Bakar', 'Umar', 'Utsman', 'Ali', 'Zaid', 'Saudangkala'];
+        $halaqahOptions = ['A', 'B', 'C'];
 
-        $santriIds = [];
-        for ($j = 0; $j < 10; $j++) {
-            $kelamin = $faker->randomElement(['Laki-laki', 'Perempuan']);
-            
-            $santri = Santri::create([
-                'nama_santri' => $faker->name($kelamin === 'Laki-laki' ? 'male' : 'female'),
-                'jenis_kelamin' => $kelamin,
-                'kelas' => $faker->randomElement($kelasOptions),
-                'kelas_halaqah' => $faker->randomElement($halaqahOptions),
-                'nisn' => $faker->numerify('##########'),
-                'ustadz_id' => $faker->randomElement($ustadzIds),
-                'nama_orangtua' => $faker->name,
-                'wa_orangtua' => $faker->phoneNumber,
-            ]);
-            
-            $santriIds[] = $santri->id;
+        $kelasIds = [];
+        foreach ($kelasOptions as $tingkat) {
+            foreach ($halaqahOptions as $huruf) {
+                $kls = \App\Models\KelasHalaqah::create([
+                    'nama_kelas' => $tingkat . '/' . $huruf,
+                    'ustadz_id' => $faker->randomElement($ustadzIds),
+                ]);
+                $kelasIds[] = $kls->id;
+            }
         }
 
-        // Buat persis 1 Setoran Dummy untuk tiap Santri (Total 10 Setoran)
-        foreach ($santriIds as $santriId) {
-            Setoran::create([
-                'santri_id' => $santriId,
-                'tanggal' => now(),
-                'kehadiran' => 'Hadir',
-                'ziyadah_juz' => rand(1, 30),
-                'ziyadah_surat' => rand(1, 114),
-                'ziyadah_ayat_mulai' => rand(1, 10),
-                'ziyadah_ayat_selesai' => rand(11, 20),
-                'ziyadah_baris' => rand(5, 15),
+        // Buat data 5 Santri per kelas
+        $santriIds = [];
+        foreach ($kelasIds as $k_id) {
+            for ($j = 0; $j < 5; $j++) {
+                $kelamin = $faker->randomElement(['Laki-laki', 'Perempuan']);
                 
-                'rabth_juz' => rand(1, 30),
-                'rabth_surat' => rand(1, 114),
-                'rabth_ayat_mulai' => rand(1, 5),
-                'rabth_ayat_selesai' => rand(6, 15),
-                'rabth_baris' => rand(5, 15),
+                $santri = Santri::create([
+                    'nama_santri' => $faker->name($kelamin === 'Laki-laki' ? 'male' : 'female'),
+                    'jenis_kelamin' => $kelamin,
+                    'kelas_halaqah_id' => $k_id,
+                    'nisn' => $faker->unique()->numerify('##########'),
+                    'nama_orangtua' => $faker->name,
+                    'wa_orangtua' => $faker->phoneNumber,
+                ]);
+                
+                $santriIds[] = $santri->id;
+            }
+        }
 
-                'murajaah_juz' => rand(1, 30),
-                'murajaah_surat' => rand(1, 114),
-                'murajaah_ayat_mulai' => rand(1, 5),
-                'murajaah_ayat_selesai' => rand(6, 15),
-                'murajaah_baris' => rand(10, 30),
+        // Buat 3 Setoran per Santri (Sabaq, Sabqi, Manzil)
+        $jenisSetoran = [
+            // Sabaq (hafalan baru) - ziyadah dominan
+            [
+                'catatan_prefix' => 'Sabaq',
+                'ziyadah_baris' => [10, 20],
+                'rabth_baris' => [0, 5],
+                'murajaah_baris' => [0, 5],
+            ],
+            // Sabqi (ulangan kemarin) - rabth dominan
+            [
+                'catatan_prefix' => 'Sabqi',
+                'ziyadah_baris' => [0, 5],
+                'rabth_baris' => [10, 25],
+                'murajaah_baris' => [0, 5],
+            ],
+            // Manzil (ulangan lama) - murajaah dominan
+            [
+                'catatan_prefix' => 'Manzil',
+                'ziyadah_baris' => [0, 3],
+                'rabth_baris' => [0, 5],
+                'murajaah_baris' => [15, 40],
+            ],
+        ];
 
-                'nilai_kelancaran' => rand(80, 100),
-                'catatan' => $faker->randomElement(['', 'Ahamdulillah lancar', 'Perlu diulang bagian akhir', 'Tajwid diperhatikan']),
-            ]);
+        foreach ($santriIds as $santriId) {
+            foreach ($jenisSetoran as $idx => $jenis) {
+                Setoran::create([
+                    'santri_id' => $santriId,
+                    'tanggal' => now()->subDays($idx),
+                    'kehadiran' => 'Hadir',
+                    'ziyadah_juz' => rand(1, 30),
+                    'ziyadah_surat' => rand(1, 114),
+                    'ziyadah_ayat_mulai' => rand(1, 10),
+                    'ziyadah_ayat_selesai' => rand(11, 20),
+                    'ziyadah_baris' => rand($jenis['ziyadah_baris'][0], $jenis['ziyadah_baris'][1]),
+
+                    'rabth_juz' => rand(1, 30),
+                    'rabth_surat' => rand(1, 114),
+                    'rabth_ayat_mulai' => rand(1, 5),
+                    'rabth_ayat_selesai' => rand(6, 15),
+                    'rabth_baris' => rand($jenis['rabth_baris'][0], $jenis['rabth_baris'][1]),
+
+                    'murajaah_juz' => rand(1, 30),
+                    'murajaah_surat' => rand(1, 114),
+                    'murajaah_ayat_mulai' => rand(1, 5),
+                    'murajaah_ayat_selesai' => rand(6, 15),
+                    'murajaah_baris' => rand($jenis['murajaah_baris'][0], $jenis['murajaah_baris'][1]),
+
+                    'nilai_kelancaran' => rand(75, 100),
+                    'catatan' => $jenis['catatan_prefix'] . ': ' . $faker->randomElement([
+                        'Alhamdulillah lancar',
+                        'Perlu diulang bagian akhir',
+                        'Tajwid perlu diperhatikan',
+                        'Sangat baik',
+                        'Cukup lancar',
+                    ]),
+                ]);
+            }
         }
     }
 }

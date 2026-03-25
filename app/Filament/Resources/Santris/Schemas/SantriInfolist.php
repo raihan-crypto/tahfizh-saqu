@@ -15,10 +15,8 @@ class SantriInfolist
                 TextEntry::make('nama_santri'),
                 TextEntry::make('jenis_kelamin')
                     ->badge(),
-                TextEntry::make('kelas'),
-                TextEntry::make('kelas_halaqah'),
-                TextEntry::make('ustadz_id')
-                    ->numeric(),
+                TextEntry::make('kelasHalaqah.nama_kelas')->label('Kelas'),
+                TextEntry::make('kelasHalaqah.ustadz.nama_ustadz')->label('Guru Pengampu'),
                 TextEntry::make('nama_orangtua'),
                 TextEntry::make('wa_orangtua'),
                 TextEntry::make('created_at')

@@ -15,7 +15,7 @@ class SetoransTable
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('santri.nama_santri')->label('Santri')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('santri.kelas')->label('Kelas')->searchable(),
+                \Filament\Tables\Columns\TextColumn::make('santri.kelasHalaqah.nama_kelas')->label('Kelas')->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('kehadiran')->badge(),
                 \Filament\Tables\Columns\TextColumn::make('nilai_kelancaran')->sortable(),
             ])
@@ -37,12 +37,12 @@ class SetoransTable
                             );
                     }),
                 \Filament\Tables\Filters\SelectFilter::make('kelas_santri')
-                    ->label('Kelas Santri')
-                    ->options(fn () => \App\Models\Santri::query()->select('kelas')->distinct()->pluck('kelas', 'kelas')->toArray())
-                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                    ->label('Kelas')
+                    ->options(fn () => \App\Models\KelasHalaqah::pluck('nama_kelas', 'id')->toArray())
+                    ->query(function ($query, $data) {
                         if (!empty($data['value'])) {
                             $query->whereHas('santri', function ($q) use ($data) {
-                                $q->where('kelas', $data['value']);
+                                $q->where('kelas_halaqah_id', $data['value']);
                             });
                         }
                     }),
@@ -52,7 +52,9 @@ class SetoransTable
                     ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
                         if (!empty($data['value'])) {
                             $query->whereHas('santri', function ($q) use ($data) {
-                                $q->where('ustadz_id', $data['value']);
+                                $q->whereHas('kelasHalaqah', function ($q2) use ($data) {
+                                    $q2->where('ustadz_id', $data['value']);
+                                });
                             });
                         }
                     })

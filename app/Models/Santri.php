@@ -11,9 +11,9 @@ class Santri extends Model
     use SoftDeletes;
     protected $guarded = [];
 
-    public function ustadz()
+    public function kelasHalaqah()
     {
-        return $this->belongsTo(Ustadz::class);
+        return $this->belongsTo(KelasHalaqah::class);
     }
 
     public function user()

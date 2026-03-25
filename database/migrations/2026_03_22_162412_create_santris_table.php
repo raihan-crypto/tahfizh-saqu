@@ -15,10 +15,8 @@ return new class extends Migration
         $table->id();
         $table->string('nisn')->unique();
         $table->string('nama_santri');
-        $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
-        $table->string('kelas');
-        $table->string('kelas_halaqah');
-        $table->foreignId('ustadz_id')->constrained('ustadzs')->restrictOnDelete();
+        $table->string('jenis_kelamin');
+        $table->foreignId('kelas_halaqah_id')->constrained('kelas_halaqahs')->cascadeOnDelete();
         $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
         $table->string('nama_orangtua');
         $table->string('wa_orangtua');

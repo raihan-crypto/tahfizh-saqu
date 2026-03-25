@@ -25,26 +25,20 @@ class UstadzsTable
                 \Filament\Tables\Columns\TextColumn::make('kelas_diampu')
                     ->label('Kelas Diampu')
                     ->state(function (\App\Models\Ustadz $record) {
-                        return $record->santris()->pluck('kelas')->filter()->unique()->sortBy('kelas')->values()->toArray();
+                        return $record->kelasHalaqahs()->pluck('nama_kelas')->filter()->unique()->sortBy('nama_kelas')->values()->toArray();
                     })
                     ->badge()
                     ->color('success')
                     ->separator(','),
             ])
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('kelas')
+                \Filament\Tables\Filters\SelectFilter::make('kelas_halaqah_id')
                     ->label('Kelas')
-                    ->options(function () {
-                        return \App\Models\Santri::query()
-                            ->select('kelas')
-                            ->distinct()
-                            ->pluck('kelas', 'kelas')
-                            ->toArray();
-                    })
-                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                    ->options(fn () => \App\Models\KelasHalaqah::pluck('nama_kelas', 'id')->toArray())
+                    ->query(function ($query, $data) {
                         if (!empty($data['value'])) {
-                            $query->whereHas('santris', function ($q) use ($data) {
-                                $q->where('kelas', $data['value']);
+                            $query->whereHas('kelasHalaqahs', function ($q) use ($data) {
+                                $q->where('id', $data['value']);
                             });
                         }
                     }),

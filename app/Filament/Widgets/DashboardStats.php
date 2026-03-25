@@ -28,7 +28,7 @@ class DashboardStats extends BaseWidget
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('success')
                 ->chart([1, 2, 4, 5, 8, 8, 10]),
-            Stat::make('Total Kelas Halaqah', Santri::distinct('kelas_halaqah')->count('kelas_halaqah'))
+            Stat::make('Total Kelas / Halaqah', \App\Models\KelasHalaqah::count())
                 ->description('Halaqah aktif')
                 ->descriptionIcon('heroicon-m-bookmark-square')
                 ->color('warning')
