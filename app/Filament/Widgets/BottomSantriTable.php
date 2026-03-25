@@ -23,7 +23,7 @@ class BottomSantriTable extends BaseWidget
         return $table
             ->query(
                 Santri::query()
-                    ->with('ustadz')
+                    ->with('kelasHalaqah.ustadz')
                     ->selectRaw('santris.*, (SELECT COALESCE(SUM(ziyadah_baris), 0) FROM setorans WHERE setorans.santri_id = santris.id) as total_baris')
                     ->orderBy('total_baris')
                     ->limit(10)
@@ -32,10 +32,15 @@ class BottomSantriTable extends BaseWidget
             ->columns([
                 Split::make([
                     Tables\Columns\TextColumn::make('index')
-                        ->rowIndex()
+                        ->state(function ($record, \Filament\Widgets\TableWidget $livewire) {
+                            return $livewire->getTableRecords()->search(fn ($item) => $item->id === $record->id) + 1;
+                        })
                         ->label('')
                         ->grow(false)
                         ->formatStateUsing(function ($state) {
+                            if ($state <= 3) {
+                                return new \Illuminate\Support\HtmlString('<div style="width: 28px; height: 28px; border-radius: 50%; background-color: #fecaca; color: #991b1b; display: flex; align-items: center; justify-content: center; font-weight: bold;">' . $state . '</div>');
+                            }
                             return new \Illuminate\Support\HtmlString('<div style="width: 28px; height: 28px; border-radius: 50%; background-color: #fee2e2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-weight: bold;">' . $state . '</div>');
                         }),
                     Tables\Columns\TextColumn::make('nama_santri')
@@ -43,10 +48,10 @@ class BottomSantriTable extends BaseWidget
                             ->formatStateUsing(function (string $state, $record) {
                                 $ustadzName = ($record->kelasHalaqah && $record->kelasHalaqah->ustadz) ? $record->kelasHalaqah->ustadz->nama_ustadz : '-';
                                 $kelasName = $record->kelasHalaqah ? $record->kelasHalaqah->nama_kelas : '-';
-                                return '<div style="display: flex; flex-direction: column;">
+                                return new \Illuminate\Support\HtmlString('<div style="display: flex; flex-direction: column;">
                                             <span style="font-weight: 500;">' . e($record->nama_santri) . '</span>
                                             <span style="font-size: 0.875rem; color: #9ca3af;">Kelas ' . e($kelasName) . ' &bull; Ust. ' . e($ustadzName) . '</span>
-                                        </div>';
+                                        </div>');
                             }),
                     Tables\Columns\TextColumn::make('total_baris')
                         ->label('')

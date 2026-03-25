@@ -44,20 +44,21 @@ class DummyDataSeeder extends Seeder
         $kelasOptions = ['1', '2', '3', '4', '5', '6'];
         $halaqahOptions = ['A', 'B', 'C'];
 
-        $kelasIds = [];
+        $kelasTingkatMap = [];
         foreach ($kelasOptions as $tingkat) {
             foreach ($halaqahOptions as $huruf) {
                 $kls = \App\Models\KelasHalaqah::create([
                     'nama_kelas' => $tingkat . '/' . $huruf,
                     'ustadz_id' => $faker->randomElement($ustadzIds),
                 ]);
-                $kelasIds[] = $kls->id;
+                $kelasTingkatMap[$kls->id] = (int) $tingkat;
             }
         }
 
         // Buat data 5 Santri per kelas
         $santriIds = [];
-        foreach ($kelasIds as $k_id) {
+        $santriTingkatMap = [];
+        foreach ($kelasTingkatMap as $k_id => $tingkat) {
             for ($j = 0; $j < 5; $j++) {
                 $kelamin = $faker->randomElement(['Laki-laki', 'Perempuan']);
                 
@@ -71,6 +72,7 @@ class DummyDataSeeder extends Seeder
                 ]);
                 
                 $santriIds[] = $santri->id;
+                $santriTingkatMap[$santri->id] = $tingkat;
             }
         }
 
@@ -100,6 +102,7 @@ class DummyDataSeeder extends Seeder
         ];
 
         foreach ($santriIds as $santriId) {
+            $tingkat = $santriTingkatMap[$santriId];
             foreach ($jenisSetoran as $idx => $jenis) {
                 Setoran::create([
                     'santri_id' => $santriId,
@@ -109,19 +112,19 @@ class DummyDataSeeder extends Seeder
                     'ziyadah_surat' => rand(1, 114),
                     'ziyadah_ayat_mulai' => rand(1, 10),
                     'ziyadah_ayat_selesai' => rand(11, 20),
-                    'ziyadah_baris' => rand($jenis['ziyadah_baris'][0], $jenis['ziyadah_baris'][1]),
+                    'ziyadah_baris' => rand($jenis['ziyadah_baris'][0], $jenis['ziyadah_baris'][1]) * $tingkat,
 
                     'rabth_juz' => rand(1, 30),
                     'rabth_surat' => rand(1, 114),
                     'rabth_ayat_mulai' => rand(1, 5),
                     'rabth_ayat_selesai' => rand(6, 15),
-                    'rabth_baris' => rand($jenis['rabth_baris'][0], $jenis['rabth_baris'][1]),
+                    'rabth_baris' => rand($jenis['rabth_baris'][0], $jenis['rabth_baris'][1]) * $tingkat,
 
                     'murajaah_juz' => rand(1, 30),
                     'murajaah_surat' => rand(1, 114),
                     'murajaah_ayat_mulai' => rand(1, 5),
                     'murajaah_ayat_selesai' => rand(6, 15),
-                    'murajaah_baris' => rand($jenis['murajaah_baris'][0], $jenis['murajaah_baris'][1]),
+                    'murajaah_baris' => rand($jenis['murajaah_baris'][0], $jenis['murajaah_baris'][1]) * $tingkat,
 
                     'nilai_kelancaran' => rand(75, 100),
                     'catatan' => $jenis['catatan_prefix'] . ': ' . $faker->randomElement([
