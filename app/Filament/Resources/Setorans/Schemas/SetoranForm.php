@@ -36,28 +36,39 @@ class SetoranForm
                                 'Sakit'     => 'Sakit',
                             ])
                             ->default('Hadir')
+                            ->live()
                             ->required(),
                     ])->columns(3),
 
-                Tabs::make('Rincian Setoran')->tabs([
-                    Tabs\Tab::make('Ziyadah')->schema(self::getSetoranFields('ziyadah')),
-                    Tabs\Tab::make('Rabth')->schema(self::getSetoranFields('rabth')),
-                    Tabs\Tab::make("Muraja'ah")->schema(self::getSetoranFields('murajaah')),
-                ]),
+                Tabs::make('Rincian Setoran')
+                    ->visible(fn (\Filament\Forms\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
+                    ->tabs([
+                        Tabs\Tab::make('Ziyadah')->schema(self::getSetoranFields('ziyadah')),
+                        Tabs\Tab::make('Rabth')->schema(self::getSetoranFields('rabth')),
+                        Tabs\Tab::make("Muraja'ah")->schema(self::getSetoranFields('murajaah')),
+                    ]),
 
                 Section::make('Penilaian')->schema([
                     TextInput::make('nilai_kelancaran')
                         ->numeric()
                         ->default(100)
-                        ->suffixAction(
-                            Action::make('kurangi_5')
+                        ->visible(fn (\Filament\Forms\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
+                        ->suffixActions([
+                            \Filament\Forms\Components\Actions\Action::make('kurangi_5')
                                 ->icon('heroicon-m-minus')
                                 ->color('danger')
                                 ->action(function ($set, $state) {
                                     $set('nilai_kelancaran', max(0, (int)$state - 5));
                                 })
-                                ->tooltip('Kurangi 5 Poin')
-                        ),
+                                ->tooltip('Kurangi 5 Poin'),
+                            \Filament\Forms\Components\Actions\Action::make('reset')
+                                ->icon('heroicon-m-arrow-path')
+                                ->color('warning')
+                                ->action(function ($set) {
+                                    $set('nilai_kelancaran', 100);
+                                })
+                                ->tooltip('Reset ke 100'),
+                        ]),
                     Textarea::make('catatan')
                         ->columnSpanFull(),
                 ])->columns(2),

@@ -11,6 +11,10 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class DashboardStats extends BaseWidget
 {
     protected static ?int $sort = 1;
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()?->role, ['admin', 'ustadz', 'guru']);
+    }
     protected function getStats(): array
     {
         return [

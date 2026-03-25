@@ -18,9 +18,20 @@ class SetoranResource extends Resource
 {
     protected static ?string $model = Setoran::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $modelLabel = 'Input Setoran';
+    protected static ?string $pluralModelLabel = 'Input Setoran';
+    protected static ?string $navigationLabel = 'Input Setoran';
+    protected static ?string $slug = 'input-setoran';
+    protected static ?int $navigationSort = 3;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-pencil-square';
 
     protected static ?string $recordTitleAttribute = 'santri_id';
+
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()?->role, ['admin', 'ustadz', 'guru']);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -51,7 +62,7 @@ class SetoranResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         $query = parent::getEloquentQuery();
-        if (auth()->user()->role === 'wali_murid') {
+        if (auth()->user()->role === 'wali_santri') {
             $query->whereHas('santri', function ($q) {
                 $q->where('user_id', auth()->id());
             });

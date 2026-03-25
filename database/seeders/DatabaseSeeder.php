@@ -30,10 +30,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Wali Murid',
-            'email' => 'walimurid@walimurid.com',
+            'name' => 'Wali Santri User',
+            'email' => 'walisantri@walisantri.com',
             'password' => bcrypt('password'),
-            'role' => 'wali_murid',
+            'role' => 'wali_santri',
         ]);
     }
 }

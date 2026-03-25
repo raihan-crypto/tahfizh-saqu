@@ -23,7 +23,20 @@ class UsersTable
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('role')
-                    ->badge(),
+                    ->label('Hak Akses (Role)')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'admin' => 'Admin (Super)',
+                        'guru' => 'Ustadz / Guru',
+                        'wali_santri' => 'Wali Santri',
+                        default => $state,
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'primary',
+                        'guru' => 'success',
+                        'wali_santri' => 'info',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -34,11 +47,18 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('role')
+                    ->label('Saring Hak Akses')
+                    ->options([
+                        'admin' => 'Admin (Super)',
+                        'guru' => 'Ustadz / Guru',
+                        'wali_santri' => 'Wali Santri',
+                    ]),
             ])
             ->recordActions([
                 EditAction::make(),
-                \Filament\Actions\DeleteAction::make(),
+                \Filament\Actions\DeleteAction::make()
+                    ->hidden(fn ($record) => $record->role === 'admin'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -18,9 +18,20 @@ class SantriResource extends Resource
 {
     protected static ?string $model = Santri::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $modelLabel = 'Data Santri';
+    protected static ?string $pluralModelLabel = 'Data Santri';
+    protected static ?string $navigationLabel = 'Data Santri';
+    protected static ?string $slug = 'data-santri';
+    protected static ?int $navigationSort = 1;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $recordTitleAttribute = 'nama_santri';
+
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()?->role, ['admin', 'ustadz', 'guru']);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -52,7 +63,7 @@ class SantriResource extends Resource
     {
         $query = parent::getEloquentQuery();
         $user = auth()->user();
-        if (in_array($user->role, ['wali_murid', 'wali_santri'])) {
+        if ($user->role === 'wali_santri') {
             $query->where('user_id', $user->id);
         }
         return $query;

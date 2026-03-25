@@ -24,12 +24,12 @@ class UserForm
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create')
+                    ->helperText('Kosongkan jika tidak ingin mengubah password saat ini.')
                     ->maxLength(255),
                 Select::make('role')
                     ->options([
                         'admin' => 'Admin',
                         'guru' => 'Guru',
-                        'wali_murid' => 'Wali Murid',
                         'wali_santri' => 'Wali Santri',
                     ])
                     ->required()

@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Santri;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Support\Facades\DB;
 
@@ -12,35 +13,61 @@ class BottomSantriTable extends BaseWidget
 {
     protected static ?int $sort = 5;
     protected int | string | array $columnSpan = 'half';
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()?->role, ['admin', 'ustadz', 'guru']);
+    }
 
     public function table(Table $table): Table
     {
         return $table
             ->query(
                 Santri::query()
+                    ->with('ustadz')
                     ->selectRaw('santris.*, (SELECT COALESCE(SUM(ziyadah_baris), 0) FROM setorans WHERE setorans.santri_id = santris.id) as total_baris')
                     ->orderBy('total_baris')
                     ->limit(10)
             )
-            ->heading('Top 10 Santri Butuh Perhatian')
+            ->heading(new \Illuminate\Support\HtmlString('<div style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;"><svg style="width: 1.5rem; height: 1.5rem;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><span style="font-size: 1.125rem; font-weight: bold;">Top 10 Butuh Perhatian</span></div>'))
             ->columns([
-                Tables\Columns\TextColumn::make('nama_santri')->label('Nama'),
-                Tables\Columns\TextColumn::make('total_baris')
-                    ->label('Pencapaian')
-                    ->formatStateUsing(function ($state) {
-                        $totalBaris = (int) $state;
-                        $juz = floor($totalBaris / 300); // 300 baris per juz
-                        $sisa = $totalBaris % 300;
-                        $halaman = floor($sisa / 15); // 15 baris per halaman
-                        $baris = $sisa % 15;
+                Split::make([
+                    Tables\Columns\TextColumn::make('index')
+                        ->rowIndex()
+                        ->label('')
+                        ->grow(false)
+                        ->formatStateUsing(function ($state) {
+                            return new \Illuminate\Support\HtmlString('<div style="width: 28px; height: 28px; border-radius: 50%; background-color: #fee2e2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-weight: bold;">' . $state . '</div>');
+                        }),
+                    Tables\Columns\TextColumn::make('nama_santri')
+                        ->label('')
+                        ->formatStateUsing(function ($record) {
+                            $ustadzName = $record->ustadz ? $record->ustadz->nama_ustadz : '-';
+                            return new \Illuminate\Support\HtmlString('
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-weight: bold; font-size: 1rem; color: #374151;">' . e($record->nama_santri) . '</span>
+                                    <span style="font-size: 0.875rem; color: #9ca3af;">Kelas ' . e($record->kelas) . ' &bull; Ust. ' . e($ustadzName) . '</span>
+                                </div>
+                            ');
+                        }),
+                    Tables\Columns\TextColumn::make('total_baris')
+                        ->label('')
+                        ->grow(false)
+                        ->formatStateUsing(function ($state) {
+                            $totalBaris = (int) $state;
+                            $juz = floor($totalBaris / 300); // 300 baris per juz
+                            $sisa = $totalBaris % 300;
+                            $halaman = floor($sisa / 15); // 15 baris per halaman
+                            $baris = $sisa % 15;
 
-                        $text = [];
-                        if ($juz > 0) $text[] = "{$juz} juz";
-                        if ($halaman > 0) $text[] = "{$halaman} hal";
-                        if ($baris > 0 || empty($text)) $text[] = "{$baris} baris";
+                            $text = [];
+                            if ($juz > 0) $text[] = "{$juz} Juz";
+                            if ($halaman > 0) $text[] = "{$halaman} Halaman";
+                            if ($baris > 0 || empty($text)) $text[] = "{$baris} Baris";
 
-                        return implode(', ', $text);
-                    }),
+                            $string = implode(', ', $text);
+                            return new \Illuminate\Support\HtmlString('<span style="background-color: #fee2e2; color: #e11d48; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: bold; font-size: 0.875rem; white-space: nowrap;">' . $string . '</span>');
+                        }),
+                ])->from('md'),
             ])->paginated(false);
     }
 }

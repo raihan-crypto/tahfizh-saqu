@@ -21,6 +21,14 @@ class UserResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationLabel = 'Kelola User';
+    protected static ?string $slug = 'kelola-user';
+    protected static ?int $navigationSort = 6;
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->role === 'admin';
+    }
 
     public static function form(Schema $schema): Schema
     {

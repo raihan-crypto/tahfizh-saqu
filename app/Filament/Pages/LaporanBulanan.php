@@ -8,7 +8,10 @@ use App\Models\Setoran;
 
 class LaporanBulanan extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationLabel = 'Laporan Bulanan';
+    protected static ?string $slug = 'laporan-bulanan';
+    protected static ?int $navigationSort = 4;
     protected string $view = 'filament.pages.laporan-bulanan';
     protected static ?string $title = 'Laporan Rapor Tahfidz';
 
@@ -18,7 +21,7 @@ class LaporanBulanan extends Page
     public function mount()
     {
         // For Wali Murid privacy
-        if (auth()->user()->role === 'wali_murid') {
+        if (auth()->user()->role === 'wali_santri') {
             $firstSantri = Santri::where('user_id', auth()->id())->first();
         } else {
             $firstSantri = Santri::first();
@@ -30,7 +33,7 @@ class LaporanBulanan extends Page
 
     public function getSantrisProperty()
     {
-        if (auth()->user()->role === 'wali_murid') {
+        if (auth()->user()->role === 'wali_santri') {
             return Santri::where('user_id', auth()->id())->orderBy('nama_santri')->get();
         }
         return Santri::orderBy('nama_santri')->get();

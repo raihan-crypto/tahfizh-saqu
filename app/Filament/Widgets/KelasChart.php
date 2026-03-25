@@ -7,9 +7,13 @@ use Filament\Widgets\ChartWidget;
 
 class KelasChart extends ChartWidget
 {
-    protected ?string $heading = 'Grafik Capaian Tahfizh per Kelas (Ziyadah Baris)';
+    protected ?string $heading = 'Rata-rata Capaian per Kelas (Juz)';
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'half';
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()?->role, ['admin', 'ustadz', 'guru']);
+    }
 
     protected function getData(): array
     {
@@ -17,17 +21,27 @@ class KelasChart extends ChartWidget
         $dataCapaian = [];
 
         foreach ($kelas as $k) {
-            $total = \DB::table('setorans')
-                ->join('santris', 'santris.id', '=', 'setorans.santri_id')
-                ->where('santris.kelas', $k)
-                ->sum('setorans.ziyadah_baris');
-            $dataCapaian[] = (int)$total;
+            $santriDiKelas = Santri::where('kelas', $k)->count();
+            
+            if ($santriDiKelas > 0) {
+                $totalBaris = \DB::table('setorans')
+                    ->join('santris', 'santris.id', '=', 'setorans.santri_id')
+                    ->where('santris.kelas', $k)
+                    ->sum('setorans.ziyadah_baris');
+                
+                $rataRataBaris = $totalBaris / $santriDiKelas;
+                $rataRataJuz = round($rataRataBaris / 300, 1);
+            } else {
+                $rataRataJuz = 0;
+            }
+            
+            $dataCapaian[] = $rataRataJuz;
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Capaian Baris',
+                    'label' => 'Rata-rata Juz',
                     'data' => $dataCapaian,
                     'backgroundColor' => '#f59e0b',
                 ],

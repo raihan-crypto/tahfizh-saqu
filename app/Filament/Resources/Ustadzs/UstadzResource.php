@@ -18,9 +18,20 @@ class UstadzResource extends Resource
 {
     protected static ?string $model = Ustadz::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $modelLabel = 'Data Ustadz';
+    protected static ?string $pluralModelLabel = 'Data Ustadz';
+    protected static ?string $navigationLabel = 'Data Ustadz';
+    protected static ?string $slug = 'data-ustadz';
+    protected static ?int $navigationSort = 2;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
     protected static ?string $recordTitleAttribute = 'nama_ustadz';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->role === 'admin';
+    }
 
     public static function form(Schema $schema): Schema
     {

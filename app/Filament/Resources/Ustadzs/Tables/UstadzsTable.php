@@ -14,10 +14,22 @@ class UstadzsTable
         return $table
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('nama_ustadz')
+                    ->label('Nama Ustadz')
                     ->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('jenis_kelamin'),
-                \Filament\Tables\Columns\TextColumn::make('no_wa'),
-                \Filament\Tables\Columns\TextColumn::make('asal_pondok'),
+                \Filament\Tables\Columns\TextColumn::make('jenis_kelamin')
+                    ->label('L/P'),
+                \Filament\Tables\Columns\TextColumn::make('no_wa')
+                    ->label('No WA'),
+                \Filament\Tables\Columns\TextColumn::make('asal_pondok')
+                    ->label('Asal Pondok'),
+                \Filament\Tables\Columns\TextColumn::make('kelas_diampu')
+                    ->label('Kelas Diampu')
+                    ->state(function (\App\Models\Ustadz $record) {
+                        return $record->santris()->pluck('kelas')->filter()->unique()->sortBy('kelas')->values()->toArray();
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->separator(','),
             ])
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('kelas')
