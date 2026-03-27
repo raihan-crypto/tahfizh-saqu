@@ -20,9 +20,13 @@ class LaporanBulanan extends Page
 
     public function mount()
     {
-        // For Wali Murid privacy
-        if (auth()->user()->role === 'wali_santri') {
-            $firstSantri = Santri::where('user_id', auth()->id())->first();
+        $user = auth()->user();
+        if ($user->role === 'wali_santri') {
+            $kelasIds = $user->kelasHalaqahIds();
+            $firstSantri = Santri::whereIn('kelas_halaqah_id', $kelasIds)->first();
+        } elseif ($user->role === 'guru' && $user->ustadz_id) {
+            $kelasIds = $user->guruKelasHalaqahIds();
+            $firstSantri = Santri::whereIn('kelas_halaqah_id', $kelasIds)->first();
         } else {
             $firstSantri = Santri::first();
         }
@@ -33,8 +37,14 @@ class LaporanBulanan extends Page
 
     public function getSantrisProperty()
     {
-        if (auth()->user()->role === 'wali_santri') {
-            return Santri::where('user_id', auth()->id())->orderBy('nama_santri')->get();
+        $user = auth()->user();
+        if ($user->role === 'wali_santri') {
+            $kelasIds = $user->kelasHalaqahIds();
+            return Santri::whereIn('kelas_halaqah_id', $kelasIds)->orderBy('nama_santri')->get();
+        }
+        if ($user->role === 'guru' && $user->ustadz_id) {
+            $kelasIds = $user->guruKelasHalaqahIds();
+            return Santri::whereIn('kelas_halaqah_id', $kelasIds)->orderBy('nama_santri')->get();
         }
         return Santri::orderBy('nama_santri')->get();
     }

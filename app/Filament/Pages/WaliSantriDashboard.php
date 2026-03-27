@@ -156,6 +156,21 @@ class WaliSantriDashboard extends Page
         ];
     }
 
+    public function getSelectedSantriDataProperty(): ?array
+    {
+        if (!$this->selectedSantriId) return null;
+        
+        $santri = Santri::with('kelasHalaqah')->find($this->selectedSantriId);
+        if (!$santri) return null;
+
+        return [
+            'nama' => $santri->nama_santri,
+            'kelas' => $santri->kelasHalaqah?->nama_kelas ?? '-',
+            'total_ziyadah' => (int) $santri->setorans()->sum('ziyadah_baris'),
+            'total_murajaah' => (int) $santri->setorans()->sum('murajaah_baris'),
+        ];
+    }
+
     protected function getViewData(): array
     {
         return [
@@ -166,6 +181,7 @@ class WaliSantriDashboard extends Page
             'topSantri' => $this->topSantri,
             'bottomSantri' => $this->bottomSantri,
             'santriList' => $this->santriList,
+            'selectedSantriData' => $this->selectedSantriData,
             'ziyadahData' => $this->ziyadahData,
             'murajaahData' => $this->murajaahData,
             'trendData' => $this->trendData,
