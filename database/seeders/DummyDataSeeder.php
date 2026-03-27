@@ -76,63 +76,88 @@ class DummyDataSeeder extends Seeder
             }
         }
 
-        // Buat 3 Setoran per Santri (Sabaq, Sabqi, Manzil)
-        $jenisSetoran = [
-            // Sabaq (hafalan baru) - ziyadah dominan
-            [
-                'catatan_prefix' => 'Sabaq',
-                'ziyadah_baris' => [10, 20],
-                'rabth_baris' => [0, 5],
-                'murajaah_baris' => [0, 5],
-            ],
-            // Sabqi (ulangan kemarin) - rabth dominan
-            [
-                'catatan_prefix' => 'Sabqi',
-                'ziyadah_baris' => [0, 5],
-                'rabth_baris' => [10, 25],
-                'murajaah_baris' => [0, 5],
-            ],
-            // Manzil (ulangan lama) - murajaah dominan
-            [
-                'catatan_prefix' => 'Manzil',
-                'ziyadah_baris' => [0, 3],
-                'rabth_baris' => [0, 5],
-                'murajaah_baris' => [15, 40],
-            ],
-        ];
-
+        // Buat setoran harian selama 30 hari terakhir (Sabaq, Sabqi, Manzil per hari)
         foreach ($santriIds as $santriId) {
             $tingkat = $santriTingkatMap[$santriId];
-            foreach ($jenisSetoran as $idx => $jenis) {
+            
+            for ($day = 0; $day < 30; $day++) {
+                $tanggal = now()->subDays($day);
+                
+                // Sabaq (hafalan baru) - variasi naik turun
                 Setoran::create([
                     'santri_id' => $santriId,
-                    'tanggal' => now()->subDays($idx),
+                    'tanggal' => $tanggal,
+                    'kehadiran' => $faker->randomElement(['Hadir', 'Hadir', 'Hadir', 'Hadir', 'Izin']),
+                    'ziyadah_juz' => rand(1, min(30, $tingkat * 5)),
+                    'ziyadah_surat' => rand(1, 114),
+                    'ziyadah_ayat_mulai' => rand(1, 10),
+                    'ziyadah_ayat_selesai' => rand(11, 20),
+                    'ziyadah_baris' => rand(5, 15) * $tingkat + rand(-3, 5),
+                    'rabth_juz' => rand(1, 30),
+                    'rabth_surat' => rand(1, 114),
+                    'rabth_ayat_mulai' => rand(1, 5),
+                    'rabth_ayat_selesai' => rand(6, 15),
+                    'rabth_baris' => rand(0, 3) * $tingkat,
+                    'murajaah_juz' => rand(1, 30),
+                    'murajaah_surat' => rand(1, 114),
+                    'murajaah_ayat_mulai' => rand(1, 5),
+                    'murajaah_ayat_selesai' => rand(6, 15),
+                    'murajaah_baris' => rand(0, 3) * $tingkat,
+                    'nilai_kelancaran' => rand(75, 100),
+                    'catatan' => 'Sabaq: ' . $faker->randomElement([
+                        'Alhamdulillah lancar', 'Perlu diulang', 'Tajwid diperhatikan', 'Sangat baik', 'Cukup lancar',
+                    ]),
+                ]);
+
+                // Sabqi (ulangan kemarin)
+                Setoran::create([
+                    'santri_id' => $santriId,
+                    'tanggal' => $tanggal,
                     'kehadiran' => 'Hadir',
                     'ziyadah_juz' => rand(1, 30),
                     'ziyadah_surat' => rand(1, 114),
                     'ziyadah_ayat_mulai' => rand(1, 10),
                     'ziyadah_ayat_selesai' => rand(11, 20),
-                    'ziyadah_baris' => rand($jenis['ziyadah_baris'][0], $jenis['ziyadah_baris'][1]) * $tingkat,
-
+                    'ziyadah_baris' => rand(0, 3) * $tingkat,
                     'rabth_juz' => rand(1, 30),
                     'rabth_surat' => rand(1, 114),
                     'rabth_ayat_mulai' => rand(1, 5),
                     'rabth_ayat_selesai' => rand(6, 15),
-                    'rabth_baris' => rand($jenis['rabth_baris'][0], $jenis['rabth_baris'][1]) * $tingkat,
-
+                    'rabth_baris' => rand(8, 20) * $tingkat + rand(-2, 4),
                     'murajaah_juz' => rand(1, 30),
                     'murajaah_surat' => rand(1, 114),
                     'murajaah_ayat_mulai' => rand(1, 5),
                     'murajaah_ayat_selesai' => rand(6, 15),
-                    'murajaah_baris' => rand($jenis['murajaah_baris'][0], $jenis['murajaah_baris'][1]) * $tingkat,
+                    'murajaah_baris' => rand(0, 3) * $tingkat,
+                    'nilai_kelancaran' => rand(70, 100),
+                    'catatan' => 'Sabqi: ' . $faker->randomElement([
+                        'Alhamdulillah lancar', 'Perlu diulang', 'Tajwid diperhatikan', 'Sangat baik', 'Cukup lancar',
+                    ]),
+                ]);
 
-                    'nilai_kelancaran' => rand(75, 100),
-                    'catatan' => $jenis['catatan_prefix'] . ': ' . $faker->randomElement([
-                        'Alhamdulillah lancar',
-                        'Perlu diulang bagian akhir',
-                        'Tajwid perlu diperhatikan',
-                        'Sangat baik',
-                        'Cukup lancar',
+                // Manzil (ulangan lama)
+                Setoran::create([
+                    'santri_id' => $santriId,
+                    'tanggal' => $tanggal,
+                    'kehadiran' => 'Hadir',
+                    'ziyadah_juz' => rand(1, 30),
+                    'ziyadah_surat' => rand(1, 114),
+                    'ziyadah_ayat_mulai' => rand(1, 10),
+                    'ziyadah_ayat_selesai' => rand(11, 20),
+                    'ziyadah_baris' => rand(0, 2) * $tingkat,
+                    'rabth_juz' => rand(1, 30),
+                    'rabth_surat' => rand(1, 114),
+                    'rabth_ayat_mulai' => rand(1, 5),
+                    'rabth_ayat_selesai' => rand(6, 15),
+                    'rabth_baris' => rand(0, 3) * $tingkat,
+                    'murajaah_juz' => rand(1, 30),
+                    'murajaah_surat' => rand(1, 114),
+                    'murajaah_ayat_mulai' => rand(1, 5),
+                    'murajaah_ayat_selesai' => rand(6, 15),
+                    'murajaah_baris' => rand(10, 30) * $tingkat + rand(-5, 8),
+                    'nilai_kelancaran' => rand(65, 100),
+                    'catatan' => 'Manzil: ' . $faker->randomElement([
+                        'Alhamdulillah lancar', 'Perlu diulang', 'Tajwid diperhatikan', 'Sangat baik', 'Cukup lancar',
                     ]),
                 ]);
             }

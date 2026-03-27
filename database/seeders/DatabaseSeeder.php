@@ -13,8 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@admin.com',
@@ -29,13 +27,27 @@ class DatabaseSeeder extends Seeder
             'role' => 'guru',
         ]);
 
-        User::factory()->create([
-            'name' => 'Wali Santri User',
-            'email' => 'walisantri@walisantri.com',
-            'password' => bcrypt('password'),
-            'role' => 'wali_santri',
-        ]);
+        // Buat 6 user wali santri, 1 per tingkat kelas
+        for ($tingkat = 1; $tingkat <= 6; $tingkat++) {
+            User::factory()->create([
+                'name' => "Wali Santri Kelas {$tingkat}",
+                'email' => "walisantri{$tingkat}@walisantri.com",
+                'password' => bcrypt('password'),
+                'role' => 'wali_santri',
+                'kelas_tingkat' => $tingkat,
+            ]);
+        }
 
         $this->call(DummyDataSeeder::class);
+
+        // Assign guru ke ustadz pertama setelah data ustadz dibuat
+        $firstUstadz = \App\Models\Ustadz::first();
+        if ($firstUstadz) {
+            $guruUser = User::where('email', 'guru@guru.com')->first();
+            $guruUser->update([
+                'name' => $firstUstadz->nama_ustadz,
+                'ustadz_id' => $firstUstadz->id,
+            ]);
+        }
     }
 }

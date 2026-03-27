@@ -57,8 +57,7 @@ class AppPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // Removed AccountWidget & FilamentInfoWidget
             ])
             ->middleware([
                 EncryptCookies::class,

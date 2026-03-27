@@ -23,11 +23,41 @@ class User extends Authenticatable
         'password',
         'role',
         'theme_color',
+        'kelas_tingkat',
+        'ustadz_id',
     ];
 
     public function santris()
     {
         return $this->hasMany(Santri::class);
+    }
+
+    public function ustadz()
+    {
+        return $this->belongsTo(Ustadz::class);
+    }
+
+    /**
+     * Get KelasHalaqah IDs for guru user (via ustadz relation)
+     */
+    public function guruKelasHalaqahIds()
+    {
+        if (!$this->ustadz_id) return collect();
+        return KelasHalaqah::where('ustadz_id', $this->ustadz_id)->pluck('id');
+    }
+
+    /**
+     * Get all KelasHalaqah that belong to this user's kelas_tingkat.
+     * e.g. kelas_tingkat=1 returns 1/A, 1/B, 1/C
+     */
+    public function kelasHalaqahs()
+    {
+        return KelasHalaqah::where('nama_kelas', 'LIKE', $this->kelas_tingkat . '/%')->get();
+    }
+
+    public function kelasHalaqahIds()
+    {
+        return KelasHalaqah::where('nama_kelas', 'LIKE', $this->kelas_tingkat . '/%')->pluck('id');
     }
 
     public function canAccessPanel(\Filament\Panel $panel): bool
@@ -37,7 +67,7 @@ class User extends Authenticatable
         }
 
         if ($panel->getId() === 'app') {
-            return in_array($this->role, ['guru', 'ustadz', 'wali_murid', 'walisantri', 'wali_santri']);
+            return in_array($this->role, ['admin', 'guru', 'ustadz', 'wali_santri']);
         }
 
         return true;

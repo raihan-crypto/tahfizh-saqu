@@ -5,6 +5,8 @@ namespace App\Filament\Resources\KelasHalaqahs;
 use App\Filament\Resources\KelasHalaqahs\Pages\CreateKelasHalaqah;
 use App\Filament\Resources\KelasHalaqahs\Pages\EditKelasHalaqah;
 use App\Filament\Resources\KelasHalaqahs\Pages\ListKelasHalaqahs;
+use App\Filament\Resources\KelasHalaqahs\Pages\ViewKelasHalaqah;
+use App\Filament\Resources\KelasHalaqahs\RelationManagers\SantrisRelationManager;
 use App\Filament\Resources\KelasHalaqahs\Schemas\KelasHalaqahForm;
 use App\Filament\Resources\KelasHalaqahs\Tables\KelasHalaqahsTable;
 use App\Models\KelasHalaqah;
@@ -43,7 +45,7 @@ class KelasHalaqahResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            SantrisRelationManager::class,
         ];
     }
 
@@ -52,6 +54,7 @@ class KelasHalaqahResource extends Resource
         return [
             'index' => ListKelasHalaqahs::route('/'),
             'create' => CreateKelasHalaqah::route('/create'),
+            'view' => ViewKelasHalaqah::route('/{record}'),
             'edit' => EditKelasHalaqah::route('/{record}/edit'),
         ];
     }

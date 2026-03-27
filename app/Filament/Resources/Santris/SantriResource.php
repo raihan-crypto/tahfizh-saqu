@@ -63,9 +63,17 @@ class SantriResource extends Resource
     {
         $query = parent::getEloquentQuery();
         $user = auth()->user();
-        if ($user->role === 'wali_santri') {
-            $query->where('user_id', $user->id);
+
+        if ($user->role === 'guru' && $user->ustadz_id) {
+            $kelasIds = $user->guruKelasHalaqahIds();
+            $query->whereIn('kelas_halaqah_id', $kelasIds);
         }
+
+        if ($user->role === 'wali_santri') {
+            $kelasIds = $user->kelasHalaqahIds();
+            $query->whereIn('kelas_halaqah_id', $kelasIds);
+        }
+
         return $query;
     }
 }

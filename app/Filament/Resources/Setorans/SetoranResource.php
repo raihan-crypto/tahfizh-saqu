@@ -62,11 +62,22 @@ class SetoranResource extends Resource
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         $query = parent::getEloquentQuery();
-        if (auth()->user()->role === 'wali_santri') {
-            $query->whereHas('santri', function ($q) {
-                $q->where('user_id', auth()->id());
+        $user = auth()->user();
+
+        if ($user->role === 'guru' && $user->ustadz_id) {
+            $kelasIds = $user->guruKelasHalaqahIds();
+            $query->whereHas('santri', function ($q) use ($kelasIds) {
+                $q->whereIn('kelas_halaqah_id', $kelasIds);
             });
         }
+
+        if ($user->role === 'wali_santri') {
+            $kelasIds = $user->kelasHalaqahIds();
+            $query->whereHas('santri', function ($q) use ($kelasIds) {
+                $q->whereIn('kelas_halaqah_id', $kelasIds);
+            });
+        }
+
         return $query;
     }
 }

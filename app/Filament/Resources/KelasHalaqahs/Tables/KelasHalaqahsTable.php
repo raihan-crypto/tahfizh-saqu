@@ -27,6 +27,7 @@ class KelasHalaqahsTable
                 //
             ])
             ->recordActions([
+                \Filament\Actions\ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([
