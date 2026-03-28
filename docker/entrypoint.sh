@@ -63,5 +63,9 @@ php artisan filament:cache-components
 # Run migrations
 php artisan migrate --force || true
 
+# Tail Laravel log to stdout so Railway captures it
+touch /var/www/html/storage/logs/laravel.log
+tail -f /var/www/html/storage/logs/laravel.log &
+
 # Start Apache
 exec apache2-foreground
