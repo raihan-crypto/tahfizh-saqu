@@ -62,7 +62,8 @@ RUN a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null || true \
     && rm -f /etc/apache2/mods-enabled/mpm_*.load \
     && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
     && a2enmod mpm_prefork \
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    && echo "LoadModule mpm_prefork_module /usr/lib/apache2/modules/mod_mpm_prefork.so" > /etc/apache2/mods-enabled/mpm_prefork.load
 
 # Setup DocumentRoot to point to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -123,6 +124,9 @@ php artisan filament:cache-components\n\
 php artisan migrate --force || true\n\
 \n\
 # Start Apache in the foreground\n\
+echo "=== Active Apache MPM modules ==="\n\
+ls /etc/apache2/mods-enabled/mpm_* 2>/dev/null || echo "No MPM symlinks found"\n\
+apache2ctl -M 2>&1 | grep mpm || true\n\
 exec apache2-foreground\n\
 ' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
