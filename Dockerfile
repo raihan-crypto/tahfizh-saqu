@@ -57,8 +57,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Enable Apache mod_rewrite and enforce prefork (fixes AH00534 multi-mpm error)
+RUN a2dismod mpm_event mpm_worker || true
+RUN a2enmod rewrite mpm_prefork
 
 # Setup DocumentRoot to point to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -85,6 +86,12 @@ RUN echo '#!/bin/bash\n\
 if [ ! -z "$PORT" ]; then\n\
   sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf\n\
   sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/000-default.conf\n\
+fi\n\
+\n\
+# Fallback .env if empty on Railway (uses .env.example defaults like MySQL config)\n\
+if [ ! -f .env ]; then\n\
+  cp .env.example .env\n\
+  php artisan key:generate --no-interaction\n\
 fi\n\
 \n\
 # Laravel Optimizations\n\
