@@ -29,6 +29,7 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Wait for MySQL to be ready
+DB_READY=false
 if [ ! -z "$DB_HOST" ]; then
   echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT:-3306}..."
   for i in $(seq 1 30); do
@@ -41,11 +42,18 @@ if [ ! -z "$DB_HOST" ]; then
       }
     " 2>/dev/null; then
       echo "MySQL is ready."
+      DB_READY=true
       break
     fi
     echo "MySQL not ready, retrying in 2s... (${i}/30)"
     sleep 2
   done
+
+  if [ "$DB_READY" = false ]; then
+    echo "WARNING: MySQL never became ready. Falling back to file-based session/cache."
+    export SESSION_DRIVER=file
+    export CACHE_STORE=file
+  fi
 fi
 
 # Clear file-based caches only
@@ -60,8 +68,12 @@ php artisan route:cache
 php artisan view:cache
 php artisan filament:cache-components
 
-# Run migrations
-php artisan migrate --force || true
+# Run migrations only if DB is available
+if [ "$DB_READY" = true ]; then
+  php artisan migrate --force
+else
+  echo "Skipping migrations: database not available."
+fi
 
 # Tail Laravel log to stdout so Railway captures it
 touch /var/www/html/storage/logs/laravel.log
