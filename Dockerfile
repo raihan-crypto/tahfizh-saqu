@@ -58,8 +58,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache mod_rewrite and enforce prefork (fixes AH00534 multi-mpm error)
-RUN a2dismod mpm_event mpm_worker || true
-RUN a2enmod rewrite mpm_prefork
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
 # Setup DocumentRoot to point to Laravel's public directory
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
