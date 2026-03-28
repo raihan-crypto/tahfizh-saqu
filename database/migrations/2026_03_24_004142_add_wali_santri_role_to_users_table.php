@@ -13,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         // Change role column from enum to string to support new roles
-        \DB::statement("ALTER TABLE users MODIFY COLUMN role VARCHAR(50) NOT NULL DEFAULT 'admin'");
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('role', 50)->default('admin')->change();
+        });
     }
 
     /**
@@ -21,6 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin','guru','wali_murid') NOT NULL DEFAULT 'admin'");
+        Schema::table('users', function (Blueprint $table) {
+            // Note: Reverting to enum might not be natively supported perfectly by all drivers via structural change, 
+            // but string will do in reverse if enum is no longer strictly enforced, or we leave as string.
+            $table->string('role')->default('admin')->change();
+        });
     }
 };
