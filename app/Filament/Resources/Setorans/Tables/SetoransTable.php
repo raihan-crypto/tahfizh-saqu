@@ -16,7 +16,15 @@ class SetoransTable
                 \Filament\Tables\Columns\TextColumn::make('tanggal')->date()->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('santri.nama_santri')->label('Santri')->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('santri.kelasHalaqah.nama_kelas')->label('Kelas')->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('kehadiran')->badge(),
+                \Filament\Tables\Columns\TextColumn::make('kehadiran')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'Hadir' => 'success',
+                        'Terlambat' => 'warning',
+                        'Izin', 'Sakit' => 'info',
+                        'Alpha' => 'danger',
+                        default => 'gray',
+                    }),
                 \Filament\Tables\Columns\TextColumn::make('nilai_kelancaran')->sortable(),
             ])
             ->filters([

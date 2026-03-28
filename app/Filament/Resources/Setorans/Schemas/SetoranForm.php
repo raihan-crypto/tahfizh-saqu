@@ -41,7 +41,7 @@ class SetoranForm
                     ])->columns(3),
 
                 Tabs::make('Rincian Setoran')
-                    ->visible(fn (\Filament\Forms\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
+                    ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
                     ->tabs([
                         Tabs\Tab::make('Ziyadah')->schema(self::getSetoranFields('ziyadah')),
                         Tabs\Tab::make('Rabth')->schema(self::getSetoranFields('rabth')),
@@ -52,16 +52,16 @@ class SetoranForm
                     TextInput::make('nilai_kelancaran')
                         ->numeric()
                         ->default(100)
-                        ->visible(fn (\Filament\Forms\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
+                        ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
                         ->suffixActions([
-                            \Filament\Forms\Components\Actions\Action::make('kurangi_5')
+                            Action::make('kurangi_5')
                                 ->icon('heroicon-m-minus')
                                 ->color('danger')
                                 ->action(function ($set, $state) {
                                     $set('nilai_kelancaran', max(0, (int)$state - 5));
                                 })
                                 ->tooltip('Kurangi 5 Poin'),
-                            \Filament\Forms\Components\Actions\Action::make('reset')
+                            Action::make('reset')
                                 ->icon('heroicon-m-arrow-path')
                                 ->color('warning')
                                 ->action(function ($set) {
