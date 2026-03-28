@@ -19,6 +19,10 @@ if [ ! -f .env ]; then
   php artisan key:generate --no-interaction
 fi
 
+# Ensure storage and cache dirs are writable
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Wait for MySQL to be ready
 if [ ! -z "$DB_HOST" ]; then
   echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT:-3306}..."
