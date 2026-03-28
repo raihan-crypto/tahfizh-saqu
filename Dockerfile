@@ -58,7 +58,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache mod_rewrite and enforce prefork (fixes AH00534 multi-mpm error)
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+RUN a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null || true \
+    && rm -f /etc/apache2/mods-enabled/mpm_*.load \
+    && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
     && a2enmod mpm_prefork \
     && a2enmod rewrite
 
