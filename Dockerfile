@@ -101,7 +101,7 @@ php artisan event:cache\n\
 php artisan route:cache\n\
 php artisan view:cache\n\
 php artisan filament:cache-components\n\
-php artisan migrate --force\n\
+php artisan migrate --force || true\n\
 \n\
 # Start Apache in the foreground\n\
 exec apache2-foreground\n\
