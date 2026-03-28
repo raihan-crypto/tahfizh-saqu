@@ -32,7 +32,7 @@ class TopSantriTable extends BaseWidget
             ->columns([
                 Split::make([
                     Tables\Columns\TextColumn::make('index')
-                        ->state(function ($record, \Filament\Widgets\TableWidget $livewire) {
+                        ->state(function ($record, BaseWidget $livewire) {
                             return $livewire->getTableRecords()->search(fn ($item) => $item->id === $record->id) + 1;
                         })
                         ->label('')
