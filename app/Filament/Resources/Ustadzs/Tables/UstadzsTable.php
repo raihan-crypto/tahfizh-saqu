@@ -44,8 +44,8 @@ class UstadzsTable
                     }),
             ])
             ->recordActions([
-                \Filament\Actions\EditAction::make(),
-                \Filament\Actions\DeleteAction::make(),
+                EditAction::make(),
+                \Filament\Tables\Actions\DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

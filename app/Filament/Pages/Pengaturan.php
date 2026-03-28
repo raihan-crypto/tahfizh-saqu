@@ -60,7 +60,7 @@ class Pengaturan extends Page
                             ->disk('public') // PASTIKAN tersimpan di disk public agar bisa di-load browser
                             ->helperText('Maksimal ukuran file: 2 MB.')
                             ->directory('logos'),
-                    ])->columns(2),
+                    ])->columns(['md' => 2]),
 
                 Section::make('Tampilan Pribadi')
                     ->description('Warna tema ini hanya akan berlaku untuk akun Anda sendiri.')

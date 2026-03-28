@@ -38,7 +38,7 @@ class SetoranForm
                             ->default('Hadir')
                             ->live()
                             ->required(),
-                    ])->columns(3),
+                    ])->columns(['md' => 3]),
 
                 Tabs::make('Rincian Setoran')
                     ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => in_array($get('kehadiran'), ['Hadir', 'Terlambat']))
@@ -71,7 +71,7 @@ class SetoranForm
                         ]),
                     Textarea::make('catatan')
                         ->columnSpanFull(),
-                ])->columns(2),
+                ])->columns(['md' => 2]),
             ]);
     }
 
