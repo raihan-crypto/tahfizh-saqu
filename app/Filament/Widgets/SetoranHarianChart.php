@@ -36,9 +36,9 @@ class SetoranHarianChart extends ChartWidget
                 ->selectRaw('COALESCE(SUM(ziyadah_baris), 0) as sabaq, COALESCE(SUM(rabth_baris), 0) as sabqi, COALESCE(SUM(murajaah_baris), 0) as manzil')
                 ->first();
 
-            $dataSabaq[] = (int) ($totals ? $totals->sabaq : 0);
-            $dataSabqi[] = (int) ($totals ? $totals->sabqi : 0);
-            $dataManzil[] = (int) ($totals ? $totals->manzil : 0);
+            $dataSabaq[] = (int) data_get($totals, 'sabaq', 0);
+            $dataSabqi[] = (int) data_get($totals, 'sabqi', 0);
+            $dataManzil[] = (int) data_get($totals, 'manzil', 0);
         }
 
         return [

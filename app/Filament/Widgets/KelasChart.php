@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Santri;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\DB;
 
 class KelasChart extends ChartWidget
 {
@@ -25,7 +26,7 @@ class KelasChart extends ChartWidget
             $santriDiKelas = Santri::where('kelas_halaqah_id', $k->id)->count();
             
             if ($santriDiKelas > 0) {
-                $totalBaris = \DB::table('setorans')
+                $totalBaris = DB::table('setorans')
                     ->join('santris', 'santris.id', '=', 'setorans.santri_id')
                     ->where('santris.kelas_halaqah_id', $k->id)
                     ->sum('setorans.ziyadah_baris');
