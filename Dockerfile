@@ -83,53 +83,9 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose default port
 EXPOSE 80
 
-# Configure entrypoint to handle Railway's dynamic PORT, cache clear, and migrations
-RUN echo '#!/bin/bash\n\
-\n\
-# Configure Apache to listen on Railway PORT\n\
-if [ ! -z "$PORT" ]; then\n\
-  sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf\n\
-  sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/000-default.conf\n\
-fi\n\
-\n\
-# Fallback .env if empty on Railway\n\
-if [ ! -f .env ]; then\n\
-  cp .env.example .env\n\
-  php artisan key:generate --no-interaction\n\
-fi\n\
-\n\
-# Wait for MySQL to be ready before running DB-dependent commands\n\
-if [ ! -z "$DB_HOST" ]; then\n\
-  echo "Waiting for MySQL at $DB_HOST:${DB_PORT:-3306}..."\n\
-  for i in $(seq 1 30); do\n\
-    php -r "new PDO('"'"'mysql:host=$DB_HOST;port=${DB_PORT:-3306};dbname=$DB_DATABASE'"'"', '"'"'$DB_USERNAME'"'"', '"'"'$DB_PASSWORD'"'"');" 2>/dev/null && break\n\
-    echo "MySQL not ready, retrying in 2s... ($i/30)"\n\
-    sleep 2\n\
-  done\n\
-fi\n\
-\n\
-# Clear only file-based caches (no DB needed)\n\
-php artisan config:clear\n\
-php artisan route:clear\n\
-php artisan view:clear\n\
-\n\
-# Cache config/routes/views (no DB needed)\n\
-php artisan config:cache\n\
-php artisan event:cache\n\
-php artisan route:cache\n\
-php artisan view:cache\n\
-php artisan filament:cache-components\n\
-\n\
-# Run migrations (DB must be ready by now)\n\
-php artisan migrate --force || true\n\
-\n\
-# Start Apache in the foreground\n\
-echo "=== Active Apache MPM modules ==="\n\
-ls /etc/apache2/mods-enabled/mpm_* 2>/dev/null || echo "No MPM symlinks found"\n\
-rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf\n\
-rm -f /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf\n\
-exec apache2-foreground\n\
-' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+# Copy entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Run entrypoint
 CMD ["/usr/local/bin/entrypoint.sh"]
