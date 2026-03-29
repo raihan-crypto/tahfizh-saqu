@@ -40,7 +40,6 @@ class AdminPanelProvider extends PanelProvider
             : $nama;
 
         return $panel
-            ->default()
             ->id('admin')
             ->path('admin')
             ->login(\App\Filament\Pages\Auth\LoginAdmin::class)

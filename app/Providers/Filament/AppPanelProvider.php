@@ -42,6 +42,7 @@ class AppPanelProvider extends PanelProvider
             : $nama;
 
         return $panel
+            ->default()
             ->id('app')
             ->path('app')
             ->login()
