@@ -9,7 +9,19 @@ a2enmod mpm_prefork 2>/dev/null || true
 APACHE_PORT=${PORT:-80}
 export APACHE_PORT=$(echo "$APACHE_PORT" | tr -d '\r\n\t ')
 echo "Listen ${APACHE_PORT}" > /etc/apache2/ports.conf
-sed -i "s/*:80/*:${APACHE_PORT}/g" /etc/apache2/sites-available/000-default.conf
+# Rewrite VirtualHost with correct port
+cat > /etc/apache2/sites-available/000-default.conf << EOF
+<VirtualHost *:${APACHE_PORT}>
+    DocumentRoot /var/www/html/public
+    <Directory /var/www/html/public>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOF
 
 # Fallback .env if not present
 if [ ! -f /var/www/html/.env ]; then
