@@ -6,10 +6,10 @@ a2dismod mpm_event mpm_worker 2>/dev/null || true
 a2enmod mpm_prefork 2>/dev/null || true
 
 # Configure Apache port for Railway
-if [ ! -z "$PORT" ] && [ "$PORT" != "80" ]; then
-  sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
-  sed -i "s/*:80/*:${PORT}/g" /etc/apache2/sites-available/000-default.conf
-fi
+APACHE_PORT=${PORT:-80}
+export APACHE_PORT=$(echo "$APACHE_PORT" | tr -d '\r\n\t ')
+echo "Listen ${APACHE_PORT}" > /etc/apache2/ports.conf
+sed -i "s/*:80/*:${APACHE_PORT}/g" /etc/apache2/sites-available/000-default.conf
 
 # Fallback .env if not present
 if [ ! -f /var/www/html/.env ]; then
