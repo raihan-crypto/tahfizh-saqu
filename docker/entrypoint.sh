@@ -71,6 +71,7 @@ php artisan filament:cache-components
 # Run migrations only if DB is available
 if [ "$DB_READY" = true ]; then
   php artisan migrate --force
+  php artisan storage:link --force 2>/dev/null || true
 else
   echo "Skipping migrations: database not available."
 fi

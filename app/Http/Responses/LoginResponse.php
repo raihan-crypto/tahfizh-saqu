@@ -14,6 +14,11 @@ class LoginResponse implements LoginResponseContract
             return redirect('/wali-santri');
         }
 
+        // admin panel is at /admin, app panel is at /
+        if ($user->role === 'admin') {
+            return redirect('/admin/dashboard');
+        }
+
         return redirect('/dashboard');
     }
 }
