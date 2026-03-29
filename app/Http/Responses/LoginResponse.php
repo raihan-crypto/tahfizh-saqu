@@ -3,6 +3,7 @@
 namespace App\Http\Responses;
 
 use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
+use Filament\Facades\Filament;
 
 class LoginResponse implements LoginResponseContract
 {
@@ -14,11 +15,7 @@ class LoginResponse implements LoginResponseContract
             return redirect('/wali-santri');
         }
 
-        // admin panel is at /admin, app panel is at /
-        if ($user->role === 'admin') {
-            return redirect('/admin/dashboard');
-        }
-
-        return redirect('/dashboard');
+        // Redirect to the current panel's dashboard
+        return redirect(Filament::getPanel()->getUrl());
     }
 }
