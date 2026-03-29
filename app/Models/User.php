@@ -63,7 +63,9 @@ class User extends Authenticatable
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            return $this->role === 'admin';
+            $result = $this->role === 'admin';
+            \Illuminate\Support\Facades\Log::info('canAccessPanel admin', ['role' => $this->role, 'result' => $result]);
+            return $result;
         }
 
         if ($panel->getId() === 'app') {

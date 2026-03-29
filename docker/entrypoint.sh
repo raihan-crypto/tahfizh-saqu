@@ -78,6 +78,8 @@ fi
 
 # Tail Laravel log to stdout so Railway captures it
 touch /var/www/html/storage/logs/laravel.log
+chmod 775 /var/www/html/storage/logs/laravel.log
+chown www-data:www-data /var/www/html/storage/logs/laravel.log
 tail -f /var/www/html/storage/logs/laravel.log &
 
 # Start Apache
