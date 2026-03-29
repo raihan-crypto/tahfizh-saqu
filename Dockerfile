@@ -4,10 +4,8 @@
 FROM composer:2.7 as vendor
 WORKDIR /app
 
-# Copy minimum files required to run composer install
 COPY composer.json composer.lock ./
 
-# Install dependencies
 RUN composer install \
     --ignore-platform-reqs \
     --no-interaction \
@@ -15,10 +13,8 @@ RUN composer install \
     --no-scripts \
     --prefer-dist
 
-# Copy the rest of the application
 COPY . .
 
-# Generate optimized autoload files
 RUN composer dump-autoload --optimize --classmap-authoritative
 
 # ==========================================
@@ -27,15 +23,12 @@ RUN composer dump-autoload --optimize --classmap-authoritative
 FROM node:22-alpine as frontend
 WORKDIR /app
 
-# Copy files required to install node modules
 COPY package.json package-lock.json* ./
 RUN npm install
 
-# Copy application files and vendor folder
 COPY . .
 COPY --from=vendor /app/vendor /app/vendor
 
-# Build frontend assets
 RUN npm run build
 
 # ==========================================
@@ -43,57 +36,41 @@ RUN npm run build
 # ==========================================
 FROM php:8.3-apache
 
-# Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    libicu-dev \
-    libzip-dev \
+    libpng-dev libonig-dev libxml2-dev \
+    zip unzip libicu-dev libzip-dev \
     && docker-php-ext-configure intl \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd intl zip opcache \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache mod_rewrite and enforce prefork (fixes AH00534 multi-mpm error)
-RUN a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null || true \
-    && rm -f /etc/apache2/mods-enabled/mpm_*.load \
-    && rm -f /etc/apache2/mods-enabled/mpm_*.conf \
-    && a2enmod mpm_prefork \
-    && a2enmod rewrite \
-    && echo "LoadModule mpm_prefork_module /usr/lib/apache2/modules/mod_mpm_prefork.so" > /etc/apache2/mods-enabled/mpm_prefork.load
+# Enable mod_rewrite
+RUN a2enmod rewrite
 
-# Setup DocumentRoot to point to Laravel's public directory
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+# Write a clean VirtualHost config
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        Options FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Allow .htaccess overrides for Laravel public directory
-RUN echo '<Directory /var/www/html/public>\n\
-    Options FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' >> /etc/apache2/conf-available/laravel.conf \
-    && a2enconf laravel \
-    && echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy built application from previous stages
 COPY --from=vendor /app /var/www/html
 COPY --from=frontend /app/public/build /var/www/html/public/build
 
-# Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose default port
 EXPOSE 80
 
-# Copy entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Run entrypoint
 CMD ["/usr/local/bin/entrypoint.sh"]
