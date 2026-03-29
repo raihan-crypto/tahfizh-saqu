@@ -66,9 +66,10 @@ RUN a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null || true \
     && echo "LoadModule mpm_prefork_module /usr/lib/apache2/modules/mod_mpm_prefork.so" > /etc/apache2/mods-enabled/mpm_prefork.load
 
 # Setup DocumentRoot to point to Laravel's public directory
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf
 
-# Allow .htaccess overrides and enable serving of assets
+# Allow .htaccess overrides
 RUN echo '<Directory /var/www/html/public>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
