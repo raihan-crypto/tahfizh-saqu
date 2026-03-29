@@ -3,7 +3,6 @@
 namespace App\Http\Responses;
 
 use Filament\Http\Responses\Auth\Contracts\LoginResponse as LoginResponseContract;
-use Filament\Facades\Filament;
 
 class LoginResponse implements LoginResponseContract
 {
@@ -11,11 +10,10 @@ class LoginResponse implements LoginResponseContract
     {
         $user = auth()->user();
 
-        if ($user->role === 'wali_santri') {
-            return redirect('/wali-santri');
-        }
-
-        // Redirect to the current panel's dashboard
-        return redirect(Filament::getPanel()->getUrl());
+        return match($user->role) {
+            'admin'       => redirect('/admin/dashboard'),
+            'wali_santri' => redirect('/app/wali-santri'),
+            default       => redirect('/app/dashboard'),
+        };
     }
 }

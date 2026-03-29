@@ -43,8 +43,9 @@ class AppPanelProvider extends PanelProvider
 
         return $panel
             ->id('app')
-            ->path('')
+            ->path('app')
             ->login()
+            ->homeUrl('/app/dashboard')
             ->brandName($brandHtml)
             ->favicon($logoUrl)
             ->colors([
