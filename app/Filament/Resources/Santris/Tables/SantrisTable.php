@@ -28,7 +28,7 @@ class SantrisTable
                     ->label('Kelas'),
             ])
             ->recordActions([
-                \Filament\Actions\EditAction::make(),
+                EditAction::make(),
                 \Filament\Actions\DeleteAction::make(),
             ])
             ->toolbarActions([

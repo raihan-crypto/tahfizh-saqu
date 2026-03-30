@@ -3,11 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -60,12 +62,10 @@ class User extends Authenticatable
         return KelasHalaqah::where('nama_kelas', 'LIKE', $this->kelas_tingkat . '/%')->pluck('id');
     }
 
-    public function canAccessPanel(\Filament\Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            $result = $this->role === 'admin';
-            \Illuminate\Support\Facades\Log::info('canAccessPanel admin', ['role' => $this->role, 'result' => $result]);
-            return $result;
+            return $this->role === 'admin';
         }
 
         if ($panel->getId() === 'app') {
