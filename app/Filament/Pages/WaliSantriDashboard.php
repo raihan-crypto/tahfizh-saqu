@@ -54,9 +54,7 @@ class WaliSantriDashboard extends Page
 
     public function getTotalZiyadahProperty(): int
     {
-        return Setoran::whereIn('santri_id', 
-            Santri::whereIn('kelas_halaqah_id', $this->getKelasIds())->pluck('id')
-        )->sum('ziyadah_baris');
+        return Santri::whereIn('kelas_halaqah_id', $this->getKelasIds())->sum('total_hafalan_baris');
     }
 
     public function getTotalMurajaahProperty(): int
@@ -69,9 +67,9 @@ class WaliSantriDashboard extends Page
     public function getTopSantriProperty()
     {
         return Santri::whereIn('kelas_halaqah_id', $this->getKelasIds())
-            ->with('kelasHalaqah')
-            ->selectRaw('santris.*, (SELECT COALESCE(SUM(ziyadah_baris), 0) FROM setorans WHERE setorans.santri_id = santris.id) as total_baris')
-            ->orderByDesc('total_baris')
+            ->with(['kelasHalaqah.ustadz'])
+            ->selectRaw('santris.*, total_hafalan_baris as total_baris')
+            ->orderByDesc('total_hafalan_baris')
             ->limit(10)
             ->get();
     }
@@ -79,9 +77,9 @@ class WaliSantriDashboard extends Page
     public function getBottomSantriProperty()
     {
         return Santri::whereIn('kelas_halaqah_id', $this->getKelasIds())
-            ->with('kelasHalaqah')
-            ->selectRaw('santris.*, (SELECT COALESCE(SUM(ziyadah_baris), 0) FROM setorans WHERE setorans.santri_id = santris.id) as total_baris')
-            ->orderBy('total_baris')
+            ->with(['kelasHalaqah.ustadz'])
+            ->selectRaw('santris.*, total_hafalan_baris as total_baris')
+            ->orderBy('total_hafalan_baris')
             ->limit(10)
             ->get();
     }
@@ -89,7 +87,7 @@ class WaliSantriDashboard extends Page
     public function getSantriListProperty()
     {
         return Santri::whereIn('kelas_halaqah_id', $this->getKelasIds())
-            ->with('kelasHalaqah')
+            ->with(['kelasHalaqah'])
             ->orderBy('nama_santri')
             ->get();
     }

@@ -19,18 +19,22 @@ class KelasChart extends ChartWidget
     protected function getData(): array
     {
         $kelasHalaqahs = \App\Models\KelasHalaqah::all();
+        
+        $stats = \App\Models\Santri::select(
+            'kelas_halaqah_id',
+            DB::raw('COUNT(id) as total_santri'),
+            DB::raw('SUM(total_hafalan_baris) as total_baris')
+        )->groupBy('kelas_halaqah_id')->get()->keyBy('kelas_halaqah_id');
+
         $labels = [];
         $dataCapaian = [];
 
         foreach ($kelasHalaqahs as $k) {
-            $santriDiKelas = Santri::where('kelas_halaqah_id', $k->id)->count();
+            $stat = $stats->get($k->id);
+            $santriDiKelas = $stat ? $stat->total_santri : 0;
             
             if ($santriDiKelas > 0) {
-                $totalBaris = DB::table('setorans')
-                    ->join('santris', 'santris.id', '=', 'setorans.santri_id')
-                    ->where('santris.kelas_halaqah_id', $k->id)
-                    ->sum('setorans.ziyadah_baris');
-                
+                $totalBaris = $stat->total_baris;
                 $rataRataBaris = $totalBaris / $santriDiKelas;
                 $rataRataJuz = round($rataRataBaris / 300, 1);
             } else {
@@ -41,12 +45,20 @@ class KelasChart extends ChartWidget
             $dataCapaian[] = $rataRataJuz;
         }
 
+        // Generate vibrant gradient colors for each bar
+        $colors = ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316', '#ec4899', '#14b8a6', '#6366f1'];
+        $bgColors = array_map(function($c, $i) use ($colors) {
+            return $colors[$i % count($colors)];
+        }, $dataCapaian, array_keys($dataCapaian));
+
         return [
             'datasets' => [
                 [
                     'label' => 'Rata-rata Juz',
                     'data' => $dataCapaian,
-                    'backgroundColor' => '#f59e0b',
+                    'backgroundColor' => $bgColors,
+                    'borderRadius' => 8,
+                    'borderSkipped' => false,
                 ],
             ],
             'labels' => $labels,

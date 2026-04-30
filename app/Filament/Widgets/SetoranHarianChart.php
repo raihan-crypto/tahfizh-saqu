@@ -24,21 +24,25 @@ class SetoranHarianChart extends ChartWidget
         $dataSabqi = [];
         $dataManzil = [];
 
+        $startDate = Carbon::today()->subDays(14)->format('Y-m-d');
+        
+        $totalsByDate = DB::table('setorans')
+            ->whereDate('tanggal', '>=', $startDate)
+            ->selectRaw('DATE(tanggal) as date, COALESCE(SUM(ziyadah_baris), 0) as sabaq, COALESCE(SUM(rabth_baris), 0) as sabqi, COALESCE(SUM(murajaah_baris), 0) as manzil')
+            ->groupBy(DB::raw('DATE(tanggal)'))
+            ->get()
+            ->keyBy('date');
+
         for ($i = 14; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
             $labels[] = $date->format('d M');
-
-            // Use Carbon date format for database queries
             $formattedDate = $date->format('Y-m-d');
 
-            $totals = DB::table('setorans')
-                ->whereDate('tanggal', $formattedDate)
-                ->selectRaw('COALESCE(SUM(ziyadah_baris), 0) as sabaq, COALESCE(SUM(rabth_baris), 0) as sabqi, COALESCE(SUM(murajaah_baris), 0) as manzil')
-                ->first();
+            $totals = $totalsByDate->get($formattedDate);
 
-            $dataSabaq[] = (int) data_get($totals, 'sabaq', 0);
-            $dataSabqi[] = (int) data_get($totals, 'sabqi', 0);
-            $dataManzil[] = (int) data_get($totals, 'manzil', 0);
+            $dataSabaq[] = $totals ? (int) $totals->sabaq : 0;
+            $dataSabqi[] = $totals ? (int) $totals->sabqi : 0;
+            $dataManzil[] = $totals ? (int) $totals->manzil : 0;
         }
 
         return [

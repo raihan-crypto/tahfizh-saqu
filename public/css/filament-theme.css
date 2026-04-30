@@ -1,0 +1,394 @@
+/* ============================================================
+   Tahfizh SaQu — Custom Filament Theme
+   Premium, colorful, interactive UI overrides
+   ============================================================ */
+
+/* ---------- Google Font Import ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ---------- Root Variables ---------- */
+:root {
+    --saqu-gradient-primary: linear-gradient(135deg, #f59e0b, #ef4444, #8b5cf6);
+    --saqu-gradient-success: linear-gradient(135deg, #10b981, #06b6d4);
+    --saqu-gradient-info: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    --saqu-gradient-warning: linear-gradient(135deg, #f59e0b, #f97316);
+    --saqu-gradient-danger: linear-gradient(135deg, #ef4444, #f97316);
+    --saqu-glass-bg: rgba(255, 255, 255, 0.7);
+    --saqu-glass-border: rgba(255, 255, 255, 0.4);
+    --saqu-shadow-glow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+    --saqu-glass-bg: rgba(255, 255, 255, 0.05);
+    --saqu-glass-border: rgba(255, 255, 255, 0.1);
+    --saqu-shadow-glow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- Base Font ---------- */
+body,
+.fi-body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* ---------- Sidebar Enhancement ---------- */
+.fi-sidebar {
+    background: linear-gradient(180deg, 
+        rgba(245, 158, 11, 0.05) 0%, 
+        rgba(139, 92, 246, 0.03) 50%,
+        transparent 100%) !important;
+    border-right: 1px solid rgba(245, 158, 11, 0.12) !important;
+}
+
+.dark .fi-sidebar {
+    background: linear-gradient(180deg,
+        rgba(245, 158, 11, 0.08) 0%,
+        rgba(139, 92, 246, 0.04) 50%,
+        rgba(0, 0, 0, 0) 100%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Sidebar nav items hover effect */
+.fi-sidebar-item-button {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 0.75rem !important;
+}
+
+.fi-sidebar-item-button:hover {
+    transform: translateX(4px);
+    background: rgba(245, 158, 11, 0.08) !important;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08)) !important;
+    border-left: 3px solid #f59e0b !important;
+}
+
+/* ---------- Topbar Enhancement ---------- */
+.fi-topbar {
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.1) !important;
+}
+
+.dark .fi-topbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ---------- Stats Overview Cards ---------- */
+.fi-wi-stats-overview-stat {
+    border-radius: 1rem !important;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+}
+
+.fi-wi-stats-overview-stat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--saqu-gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.fi-wi-stats-overview-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+.fi-wi-stats-overview-stat:hover::before {
+    opacity: 1;
+}
+
+.dark .fi-wi-stats-overview-stat:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ---------- Widget Cards ---------- */
+.fi-wi-chart,
+.fi-wi-table {
+    border-radius: 1rem !important;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.fi-wi-chart:hover,
+.fi-wi-table:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark .fi-wi-chart:hover,
+.dark .fi-wi-table:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* ---------- Table Enhancement ---------- */
+.fi-ta-row {
+    transition: all 0.2s ease !important;
+}
+
+.fi-ta-row:hover {
+    background: rgba(245, 158, 11, 0.04) !important;
+}
+
+.dark .fi-ta-row:hover {
+    background: rgba(245, 158, 11, 0.06) !important;
+}
+
+/* ---------- Buttons Enhancement ---------- */
+.fi-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 0.75rem !important;
+}
+
+.fi-btn-primary:hover,
+.fi-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ---------- Form Inputs ---------- */
+.fi-input-wrp {
+    transition: all 0.2s ease !important;
+    border-radius: 0.75rem !important;
+}
+
+.fi-input-wrp:focus-within {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* ---------- Modal / Sheet Glassmorphism ---------- */
+.fi-modal-window {
+    backdrop-filter: blur(16px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid var(--saqu-glass-border) !important;
+}
+
+/* ---------- Section Cards ---------- */
+.fi-section {
+    border-radius: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-section:hover {
+    box-shadow: var(--saqu-shadow-glow) !important;
+}
+
+/* ---------- Page Heading ---------- */
+.fi-header-heading {
+    background: var(--saqu-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800 !important;
+}
+
+/* ---------- Login Page Enhancement ---------- */
+.fi-simple-layout {
+    position: relative;
+    overflow: hidden;
+}
+
+.fi-simple-layout::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(ellipse at 20% 80%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+    animation: loginBgFloat 20s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.fi-simple-main-ctn {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes loginBgFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-3%, 3%) rotate(1deg); }
+    50% { transform: translate(3%, -2%) rotate(-1deg); }
+    75% { transform: translate(-2%, -3%) rotate(0.5deg); }
+}
+
+.fi-simple-page {
+    backdrop-filter: blur(20px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
+    background: var(--saqu-glass-bg) !important;
+    border: 1px solid var(--saqu-glass-border) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark .fi-simple-page {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ---------- Notification Enhancement ---------- */
+.fi-notification {
+    border-radius: 1rem !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* ---------- Badge Enhancement ---------- */
+.fi-badge {
+    border-radius: 9999px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.fi-badge:hover {
+    transform: scale(1.05);
+}
+
+/* ---------- Scrollbar Styling ---------- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.25);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.45);
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    50% { box-shadow: 0 0 20px 5px rgba(245, 158, 11, 0.15); }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-left {
+    animation: slideInLeft 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* ---------- Custom Stagger Animations ---------- */
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.3s; opacity: 0; }
+
+/* ---------- Dashboard content area ---------- */
+.fi-page-dashboard .fi-widgets {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* ---------- Floating decorative shapes (can be toggled) ---------- */
+.saqu-floating-shapes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.saqu-floating-shapes .shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.04;
+}
+
+.saqu-floating-shapes .shape:nth-child(1) {
+    width: 300px;
+    height: 300px;
+    background: #f59e0b;
+    top: 10%;
+    right: -100px;
+    animation: floatShape 25s ease-in-out infinite;
+}
+
+.saqu-floating-shapes .shape:nth-child(2) {
+    width: 200px;
+    height: 200px;
+    background: #8b5cf6;
+    bottom: 20%;
+    left: -50px;
+    animation: floatShape 30s ease-in-out infinite reverse;
+}
+
+.saqu-floating-shapes .shape:nth-child(3) {
+    width: 150px;
+    height: 150px;
+    background: #10b981;
+    top: 60%;
+    right: 20%;
+    animation: floatShape 20s ease-in-out infinite 5s;
+}
+
+@keyframes floatShape {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -30px) scale(1.1); }
+    50% { transform: translate(-20px, 20px) scale(0.95); }
+    75% { transform: translate(10px, -10px) scale(1.05); }
+}
+
+/* ---------- Print styles ---------- */
+@media print {
+    .fi-topbar, .fi-sidebar, .fi-breadcrumbs,
+    .saqu-floating-shapes { 
+        display: none !important; 
+    }
+    .fi-main { 
+        padding: 0 !important; 
+        margin: 0 !important; 
+    }
+    * { 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+    }
+    body { 
+        background: white !important; 
+    }
+}

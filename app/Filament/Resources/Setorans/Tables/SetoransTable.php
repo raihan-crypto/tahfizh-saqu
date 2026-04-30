@@ -69,7 +69,7 @@ class SetoransTable
             ])
             ->recordActions([
                 EditAction::make(),
-                \Filament\Tables\Actions\DeleteAction::make(),
+                \Filament\Actions\DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

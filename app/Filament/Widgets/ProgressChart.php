@@ -18,11 +18,7 @@ class ProgressChart extends ChartWidget
 
     protected function getData(): array
     {
-        $totals = DB::table('santris')
-            ->leftJoin('setorans', 'setorans.santri_id', '=', 'santris.id')
-            ->selectRaw('santris.id, COALESCE(SUM(setorans.ziyadah_baris), 0) as total_baris')
-            ->groupBy('santris.id')
-            ->get();
+        $totals = \App\Models\Santri::select('total_hafalan_baris as total_baris')->get();
 
         $kategori = [
             '0-1 Juz' => 0,
@@ -53,7 +49,16 @@ class ProgressChart extends ChartWidget
                 [
                     'label' => 'Jumlah Santri',
                     'data' => array_values($kategori),
-                    'backgroundColor' => ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'],
+                    'backgroundColor' => [
+                        '#ef4444',  // Red - 0-1 Juz
+                        '#f59e0b',  // Amber - 2-5 Juz
+                        '#10b981',  // Emerald - 6-10 Juz
+                        '#3b82f6',  // Blue - 11-20 Juz
+                        '#8b5cf6',  // Purple - 21-30 Juz
+                    ],
+                    'borderWidth' => 3,
+                    'borderColor' => '#ffffff',
+                    'hoverOffset' => 12,
                 ],
             ],
             'labels' => array_keys($kategori),
@@ -62,6 +67,6 @@ class ProgressChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
     }
 }
