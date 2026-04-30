@@ -13,7 +13,7 @@ class Dashboard extends \Filament\Pages\Dashboard
     {
         // Redirect wali_santri ke dashboard mereka
         if (auth()->user()?->role === 'wali_santri') {
-            $this->redirect('/wali-santri');
+            $this->redirect('/app/wali-santri');
             return;
         }
     }

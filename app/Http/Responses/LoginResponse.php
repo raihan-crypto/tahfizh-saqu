@@ -13,7 +13,7 @@ class LoginResponse implements LoginResponseContract
         $panel = Filament::getPanel();
 
         if ($user->role === 'wali_santri') {
-            return redirect($panel->getUrl() . '/wali-santri');
+            return redirect('/app/wali-santri');
         }
 
         return redirect($panel->getUrl() . '/dashboard');
